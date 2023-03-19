@@ -13,7 +13,7 @@ int *allocateIntArray(int n)
 	}
 	return arr;
 }
-void findWaitingTime(int n, int bt, int wt, int quantum)
+void findWaitingTime(int n, int *bt, int *wt, int quantum)
 {
 	bool done = false;
 	int *rem_bt = allocateIntArray(n);
@@ -43,7 +43,7 @@ void findWaitingTime(int n, int bt, int wt, int quantum)
 		}
 	}
 }
-void findTurnAroundTime(int n, int bt, int wt, int *tat)
+void findTurnAroundTime(int n, int *bt, int *wt, int *tat)
 {
 	for (int i = 0; i < n; i++)
 		tat[i] = bt[i] + wt[i];
