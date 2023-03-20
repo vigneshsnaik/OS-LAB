@@ -4,11 +4,6 @@
 #include "../colours.h"
 #include "process.h"
 
-int min(int a, int b)
-{
-    return (a > b ? b : a);
-}
-
 void fcfs(Process *p, int n)
 {
     int time = 0, cur_pTime;
