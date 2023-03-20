@@ -24,6 +24,8 @@ void fcfs(Process *p, int n)
     int time = p[0].at;
     for (int i = 0; i < n; i++)
     {
+        if (time < p[i].at)
+            time = p[i].at;
         time += p[i].bt;
         p[i].ct = time;
     }
