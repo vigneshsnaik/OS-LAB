@@ -2,7 +2,21 @@
 #include <stdbool.h>
 #include "../colours.h"
 #include "process.h"
+void swap(Process *p, int a, int b)
+{
+	Process tmp = p[a];
+	p[a] = p[b];
+	p[b] = tmp;
+}
+void sort(Process *p, int n)
+{
+	int i, j;
+	for (i = 0; i < n - 1; i++)
 
+		for (j = 0; j < n - i - 1; j++)
+			if (p[j].at > p[j + 1].at)
+				swap(p, j, j + 1);
+}
 int min(int a, int b)
 {
 	return (a > b ? b : a);
@@ -10,6 +24,7 @@ int min(int a, int b)
 
 void roundRobin(Process *p, int n)
 {
+	sort(p, n);
 	int q;
 	printf("Time Quantum : ");
 	scanf("%d", &q);
