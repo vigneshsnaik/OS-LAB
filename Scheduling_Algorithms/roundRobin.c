@@ -2,86 +2,88 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include "../colours.h"
+#include "process.h"
 
-int *allocateIntArray(int n)
+int min(int a, int b)
 {
-	int *arr = (int *)malloc(n * sizeof(int));
-	if (arr == NULL)
-	{
-		printf(F_BOLD F_T_RED "Memory allocation failed\n" F_RESET);
-		exit(EXIT_FAILURE);
-	}
-	return arr;
+	return (a > b ? b : a);
 }
-void findWaitingTime(int n, int bt, int wt, int quantum)
+void findavgTime(int n, Process *p)
 {
-	bool done = false;
-	int *rem_bt = allocateIntArray(n);
+	float total_wt = 0, total_tat = 0;
 	for (int i = 0; i < n; i++)
-		rem_bt[i] = bt[i];
-	int t = 0;
+	{
+		total_tat += p[i].tat;
+		total_wt += p[i].wt;
+	}
+	printf("Average waiting time = %f\n", (float)total_wt / (float)n);
+	printf("Average turn around time = %f\n", (float)total_tat / (float)n);
+}
+void startProcess(Process *p, int n, int q)
+{
+	int time = 0, cur_pTime;
+	bool done = false;
 	while (!done)
 	{
 		done = true;
 		for (int i = 0; i < n; i++)
 		{
-			if (rem_bt[i] > 0)
+			if (p[i].rem_bt)
 			{
 				done = false;
-				if (rem_bt[i] > quantum)
-				{
-					t += quantum;
-					rem_bt[i] -= quantum;
-				}
-				else
-				{
-					t = t + rem_bt[i];
-					wt[i] = t - bt[i];
-					rem_bt[i] = 0;
-				}
+				cur_pTime = min(p[i].rem_bt, q);
+				p[i].rem_bt -= cur_pTime;
+				time += cur_pTime;
+				if (!p[i].rem_bt)
+					p[i].ct = time;
 			}
 		}
 	}
-}
-void findTurnAroundTime(int n, int bt, int wt, int *tat)
-{
-	for (int i = 0; i < n; i++)
-		tat[i] = bt[i] + wt[i];
-}
-void findavgTime(int n, int *bt, int quantum)
-{
-	int *wt = allocateIntArray(n), *tat = allocateIntArray(n), total_wt = 0, total_tat = 0;
-	findWaitingTime(n, bt, wt, quantum);
-	findTurnAroundTime(n, bt, wt, tat);
-	printf(F_BOLD F_RVID "+----+-----+-----+-----+\n" F_RESET);
-	printf(F_BOLD F_RVID "| PN |  BT |  WT | TAT |\n" F_RESET);
-	printf(F_BOLD F_RVID "+----+-----+-----+-----+\n" F_RESET);
 	for (int i = 0; i < n; i++)
 	{
-		total_wt = total_wt + wt[i];
-		total_tat = total_tat + tat[i];
-		printf(F_RVID "| %2d | %3d | %3d | %3d |\n" F_RESET, i + 1, bt[i], wt[i], tat[i]);
+		p[i].tat = p[i].ct - p[i].at;
+		p[i].wt = p[i].tat - p[i].bt;
 	}
-	printf(F_RVID "+----+-----+-----+-----+\n" F_RESET);
-	printf("Average waiting time = %f\n", (float)total_wt / (float)n);
-	printf("Average turn around time = %f\n", (float)total_tat / (float)n);
-	free(wt);
-	free(tat);
 }
+void printProcessTable(int n, Process *p)
+{
+
+	// PRINT TABLE
+	printf(F_BOLD F_RVID "+----+-----+-----+-----+-----+\n" F_RESET);
+	printf(F_BOLD F_RVID "| PN |  BT |  WT | TAT |  CT |\n" F_RESET);
+	printf(F_BOLD F_RVID "+----+-----+-----+-----+-----+\n" F_RESET);
+	for (int i = 0; i < n; i++)
+	{
+		printf(F_RVID "| %2d | %3d | %3d | %3d | %3d |\n" F_RESET, p[i].pid, p[i].bt, p[i].wt, p[i].tat, p[i].ct);
+	}
+	printf(F_RVID "+----+-----+-----+-----+-----+\n" F_RESET);
+}
+
 int main()
 {
-	int *burst_time, quantum, n;
+	int quantum, n;
+	Process *p;
 	printf("Number of processes : ");
 	scanf("%d", &n);
-	burst_time = allocateIntArray(n);
+
+	p = (Process *)malloc(n * sizeof(Process));
+	if (p == NULL)
+	{
+		printf(F_BOLD F_T_RED "Memory allocation failed\n" F_RESET);
+		exit(EXIT_FAILURE);
+	}
+
 	for (int i = 0; i < n; i++)
 	{
-		printf("Burst time of process %d : ", i + 1);
-		scanf("%d", &burst_time[i]);
+		printf("burstTime");
+		scanf("%d", &p[i].bt);
+		p[i].rem_bt = p[i].bt;
+		p[i].pid = i + 1;
 	}
 	printf("Time Quantum : ");
 	scanf("%d", &quantum);
-	findavgTime(n, burst_time, quantum);
-	free(burst_time);
+	startProcess(p, n, quantum);
+	printProcessTable(n, p);
+	findavgTime(n, p);
 	return 0;
 }
