@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include "../colours.h"
 #include "process.h"
 
@@ -9,8 +8,11 @@ int min(int a, int b)
 	return (a > b ? b : a);
 }
 
-void roundRobin(Process *p, int n, int q)
+void roundRobin(Process *p, int n)
 {
+	int q;
+	printf("Time Quantum : ");
+	scanf("%d", &q);
 	int time = 0, cur_pTime;
 	bool done = false;
 	while (!done)
@@ -29,38 +31,15 @@ void roundRobin(Process *p, int n, int q)
 			}
 		}
 	}
-	for (int i = 0; i < n; i++)
-	{
-		p[i].tat = p[i].ct - p[i].at;
-		p[i].wt = p[i].tat - p[i].bt;
-	}
 }
-
 
 int main()
 {
-	int quantum, n;
-	Process *p;
+	int n;
 	printf("Number of processes : ");
 	scanf("%d", &n);
-
-	p = (Process *)malloc(n * sizeof(Process));
-	if (p == NULL)
-	{
-		printf(F_BOLD F_T_RED "Memory allocation failed\n" F_RESET);
-		exit(EXIT_FAILURE);
-	}
-
-	for (int i = 0; i < n; i++)
-	{
-		printf("burstTime");
-		scanf("%d", &p[i].bt);
-		p[i].rem_bt = p[i].bt;
-		p[i].pid = i + 1;
-	}
-	printf("Time Quantum : ");
-	scanf("%d", &quantum);
-	roundRobin(p, n, quantum);
+	Process *p = newProcess(n);
+	roundRobin(p, n);
 	printProcessTable(n, p);
 	findavgTime(n, p);
 	return 0;
