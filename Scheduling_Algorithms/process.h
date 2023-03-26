@@ -60,5 +60,18 @@ Process *newProcess(int n)
     }
     return p;
 }
+void start(int n, Process *p); // must be defined in the program
+
+int main()
+{
+    int n;
+    printf("Number of processes : ");
+    scanf("%d", &n);
+    Process *p = newProcess(n);
+    start(n, p);
+    printProcessTable(n, p);
+    findavgTime(n, p);
+    return 0;
+}
 
 #endif /* PROCESS_H */

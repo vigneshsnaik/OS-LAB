@@ -1,8 +1,5 @@
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include "../colours.h"
 #include "process.h"
+
 void swap(Process *p, int a, int b)
 {
     Process tmp = p[a];
@@ -18,7 +15,7 @@ void sort(Process *p, int n)
             if (p[j].at > p[j + 1].at)
                 swap(p, j, j + 1);
 }
-void fcfs(Process *p, int n)
+void start(int n, Process *p)
 {
     sort(p, n);
     int time = p[0].at;
@@ -29,17 +26,4 @@ void fcfs(Process *p, int n)
         time += p[i].bt;
         p[i].ct = time;
     }
-}
-
-int main()
-{
-    int n;
-    printf("Number of processes : ");
-    scanf("%d", &n);
-
-    Process *p = newProcess(n);
-    fcfs(p, n);
-    printProcessTable(n, p);
-    findavgTime(n, p);
-    return 0;
 }

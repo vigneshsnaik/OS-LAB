@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include "../colours.h"
 #include "process.h"
+
 void swap(Process *p, int a, int b)
 {
 	Process tmp = p[a];
@@ -22,7 +22,7 @@ int min(int a, int b)
 	return (a > b ? b : a);
 }
 
-void roundRobin(Process *p, int n)
+void start(int n, Process *p)
 {
 	sort(p, n);
 	int q;
@@ -46,16 +46,4 @@ void roundRobin(Process *p, int n)
 			}
 		}
 	}
-}
-
-int main()
-{
-	int n;
-	printf("Number of processes : ");
-	scanf("%d", &n);
-	Process *p = newProcess(n);
-	roundRobin(p, n);
-	printProcessTable(n, p);
-	findavgTime(n, p);
-	return 0;
 }
