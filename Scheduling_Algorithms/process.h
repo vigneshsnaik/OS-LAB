@@ -8,6 +8,7 @@
 typedef struct
 {
     int at, pid, wt, bt, tat, rem_bt, ct;
+    short priority;
 } Process;
 
 void calculateTime(int n, Process *p)
